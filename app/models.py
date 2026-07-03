@@ -5,6 +5,7 @@ import enum
 
 from .database import Base
 
+# Estados válidos para el ciclo de vida de un reporte.
 class EstadoReporte(str, enum.Enum):
     activo = "Activo"
     en_proceso = "En Proceso"
@@ -30,6 +31,7 @@ class Reporte(Base):
     sector = Column(String, nullable=False)
     estado = Column(Enum(EstadoReporte), default=EstadoReporte.activo)
 
+    # Relación con el usuario que crea el reporte.
     usuario_id = Column(Integer, ForeignKey("usuarios.id"))
 
     creador = relationship("Usuario", back_populates="reportes")
@@ -42,6 +44,7 @@ class Seguimiento(Base):
     comentario = Column(Text, nullable=False)
     fecha = Column(DateTime, default=datetime.utcnow)
 
+    # Vincula cada seguimiento con su reporte y el usuario que lo registró.
     reporte_id = Column(Integer, ForeignKey("reportes.id"))
     usuario_id = Column(Integer, ForeignKey("usuarios.id"))
 
