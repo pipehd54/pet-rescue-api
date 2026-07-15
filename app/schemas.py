@@ -43,7 +43,7 @@ class ReporteBase(BaseModel):
     sector: str
 
 class ReporteCreate(ReporteBase):
-    pass # Hereda todo de ReporteBase, no necesitamos añadir nada más por ahora
+    usuario_id: int
 
 class ReporteResponse(ReporteBase):
     id: int
