@@ -13,6 +13,10 @@ def get_usuario_by_email(db: Session, email: str):
     ''' Busca un usuario por su correo electrónico '''
     return db.query(models.Usuario).filter(models.Usuario.email == email).first()
 
+def get_usuario(db: Session, usuario_id: int) -> models.Usuario | None:
+    ''' Busca un usuario por su ID. Devuelve None si no existe. '''
+    return db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
+
 def create_usuario(db: Session, usuario: schemas.UsuarioCreate):
     ''' Crea un nuevo usuario en la base de datos tras hashear su contraseña '''
     hashed_password = get_password_hash(usuario.password)
@@ -48,3 +52,36 @@ def get_reporte(db: Session, reporte_id: int) -> models.Reporte | None:
 def get_reportes(db: Session, skip: int = 0, limit: int = 100) -> list[models.Reporte]:
     ''' Obtiene una lista de reportes con paginacion basica para optimizar el rendimiento '''
     return db.query(models.Reporte).offset(skip).limit(limit).all()
+
+
+def create_seguimiento(
+    db: Session, seguimiento: schemas.SeguimientoCreate, usuario_id: int
+) -> models.Seguimiento:
+    '''
+    Crea un nuevo seguimiento (comentario) asociado a un reporte y al usuario autor.
+    El reporte_id viaja dentro del schema; el usuario_id se pasa por separado
+    para simular la futura extracción desde el token JWT (Fase 2 de autenticación).
+    '''
+    db_seguimiento = models.Seguimiento(
+        comentario=seguimiento.comentario,
+        reporte_id=seguimiento.reporte_id,
+        usuario_id=usuario_id,
+    )
+    db.add(db_seguimiento)
+    db.commit()
+    db.refresh(db_seguimiento)
+    return db_seguimiento
+
+
+def get_seguimientos_by_reporte(
+    db: Session, reporte_id: int, skip: int = 0, limit: int = 100
+) -> list[models.Seguimiento]:
+    ''' Obtiene los seguimientos de un reporte específico, ordenados del más reciente al más antiguo. '''
+    return (
+        db.query(models.Seguimiento)
+        .filter(models.Seguimiento.reporte_id == reporte_id)
+        .order_by(models.Seguimiento.fecha.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )

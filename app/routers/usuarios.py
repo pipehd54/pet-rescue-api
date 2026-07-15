@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app import schemas, crud, database, models
+from app import schemas, crud, database
 
 router = APIRouter(
     prefix="/usuarios",
@@ -28,7 +28,7 @@ def registrar_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(data
 @router.get("/{usuario_id}", response_model=schemas.UsuarioResponse)
 def obtener_usuario(usuario_id: int, db: Session = Depends(database.get_db)):
     ''' Obtiene la informacion publica de un usuario por su ID '''
-    db_usuario = db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
+    db_usuario = crud.get_usuario(db, usuario_id=usuario_id)
     if db_usuario is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
