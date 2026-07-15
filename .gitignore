@@ -1,0 +1,25 @@
+# Bytecode compilado de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+ENV/
+
+# Variables de entorno / secretos locales
+.env
+
+# Archivos de IDEs
+.vscode/
+.idea/
+
+# Bases de datos locales (si en algún momento se usa SQLite para pruebas)
+*.sqlite3
+*.db
+
+# Cache de pytest
+.pytest_cache/
+.coverage
